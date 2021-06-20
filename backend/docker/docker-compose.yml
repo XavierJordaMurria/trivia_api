@@ -1,0 +1,26 @@
+version: '3.3'
+networks:
+  trivia_network:
+
+volumes:
+  trivia-volume:
+
+services:
+  trivia-postgres:
+      image: postgres
+      container_name: trivia
+      restart: "no"
+      ports:
+        - "15432:5432"
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: tgkicksass
+        APP_DB_USER: docker
+        APP_DB_PASS: docker
+        APP_DB_NAME: udacity
+        TZ: Europe/Madrid
+      volumes:
+        - ./db:/docker-entrypoint-initdb.d/
+        - trivia-volume:/var/lib/postgresql/data
+      networks:
+        - trivia_network

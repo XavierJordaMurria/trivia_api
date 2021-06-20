@@ -1,0 +1,6 @@
+CREATE DATABASE trivia;
+GRANT ALL PRIVILEGES ON DATABASE trivia TO postgres;
+
+
+-- switch to melco db
+\c trivia
