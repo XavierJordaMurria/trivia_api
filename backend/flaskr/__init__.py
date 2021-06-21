@@ -4,7 +4,8 @@ from flask import (
     Flask,
     request,
     abort,
-    jsonify
+    jsonify,
+    render_template
 )
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -113,9 +114,27 @@ def create_app(test_config=None):
   '''
 
     '''
-  @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
+    @app.errorhandler(401)
+    def unauthorized__error(error):
+      return render_template('errors/401.html'), 401
+
+    @app.errorhandler(403)
+    def no_permission_error(error):
+      return render_template('errors/403.html'), 403
+
+    @app.errorhandler(404)
+    def not_found_error(error):
+      return render_template('errors/404.html'), 404
+
+    @app.errorhandler(422)
+    def unprocessable_entity(error):
+      return render_template('errors/422.html'), 422
+
+    @app.errorhandler(500)
+    def server_error(error):
+      return render_template('errors/500.html'), 500
 
     return app
