@@ -9,6 +9,7 @@ from flask import (
 )
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from flask_paginate import Pagination, get_page_args
 import random
 from .models import setup_db, Question, Category
 from typing import List
@@ -42,21 +43,17 @@ def create_app(test_config=None):
   Create an endpoint to handle GET requests 
   for all available categories.
   '''
-    #  Create Venue
-    #  ----------------------------------------------------------------
-
     @app.route('/categories', methods=['GET'])
     def get_categories():
-      result: List[Category] = Category.query.all()
-      categories = {}
-      raw_categories = [i.format() for i in result]
-      
-      result = { i['id']:i['type'] for i in raw_categories}
+        result = categories_dao()
+        return jsonify(categories=result)
 
-      return jsonify(categories = result)
-    
+    def categories_dao():
+        result: List[Category] = Category.query.all()
+        raw_categories = [i.format() for i in result]
+        result = {i['id']: i['type'] for i in raw_categories}
+        return result
     '''
-  @TODO: 
   Create an endpoint to handle GET requests for questions, 
   including pagination (every 10 questions). 
   This endpoint should return a list of questions, 
@@ -67,7 +64,21 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+    @app.route('/questions', methods=['GET'])
+    def get_questions():
+        page, per_page, offset = get_page_args(page_parameter='page',
+                                               per_page_parameter='per_page')
+        result = Question.query.order_by(Question.id.desc()).paginate(
+            page, per_page, error_out=False)
 
+        questions = [i.format() for i in result.items ]
+        result = {
+            'questions': questions,
+            'totalQuestions': result.total,
+            'categories': categories_dao(),
+            'currentCategory': result.total
+        }
+        return jsonify(result)
     '''
   @TODO: 
   Create an endpoint to DELETE question using a question ID. 
@@ -125,22 +136,22 @@ def create_app(test_config=None):
   '''
     @app.errorhandler(401)
     def unauthorized__error(error):
-      return render_template('errors/401.html'), 401
+        return render_template('errors/401.html'), 401
 
     @app.errorhandler(403)
     def no_permission_error(error):
-      return render_template('errors/403.html'), 403
+        return render_template('errors/403.html'), 403
 
     @app.errorhandler(404)
     def not_found_error(error):
-      return render_template('errors/404.html'), 404
+        return render_template('errors/404.html'), 404
 
     @app.errorhandler(422)
     def unprocessable_entity(error):
-      return render_template('errors/422.html'), 422
+        return render_template('errors/422.html'), 422
 
     @app.errorhandler(500)
     def server_error(error):
-      return render_template('errors/500.html'), 500
+        return render_template('errors/500.html'), 500
 
     return app
