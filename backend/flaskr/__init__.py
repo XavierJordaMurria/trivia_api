@@ -12,6 +12,7 @@ from flask_cors import CORS
 import random
 from .models import setup_db, Question, Category
 from typing import List
+from functools import reduce
 
 QUESTIONS_PER_PAGE = 10
 
@@ -47,7 +48,12 @@ def create_app(test_config=None):
     @app.route('/categories', methods=['GET'])
     def get_categories():
       result: List[Category] = Category.query.all()
-      return jsonify(json_list=[i.format() for i in result])
+      categories = {}
+      raw_categories = [i.format() for i in result]
+      
+      result = { i['id']:i['type'] for i in raw_categories}
+
+      return jsonify(categories = result)
     
     '''
   @TODO: 
