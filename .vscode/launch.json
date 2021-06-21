@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "./flaskr/__init__.py",
+                "FLASK_APP": "/home/xavi/Udacity/PythonWebDeveloper/trivia_api/backend/flaskr/__init__.py",
                 "FLASK_ENV": "development"
             },
             "args": [
