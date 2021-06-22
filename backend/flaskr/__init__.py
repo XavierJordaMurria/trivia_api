@@ -1,17 +1,24 @@
 import sys
+import babel
 import os
 from flask import (
     Flask,
     request,
     abort,
     jsonify,
-    render_template
+    render_template,
+    flash
 )
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_paginate import Pagination, get_page_args
 import random
-from .models import setup_db, Question, Category
+from .models import (
+    setup_db,
+    Question,
+    Category,
+    db
+)
 from typing import List
 from functools import reduce
 
@@ -22,6 +29,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
+    app.config.from_envvar('FLASK_CONFIG')
 
     # CORS(app)
     cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -71,7 +79,7 @@ def create_app(test_config=None):
         result = Question.query.order_by(Question.id.desc()).paginate(
             page, per_page, error_out=False)
 
-        questions = [i.format() for i in result.items ]
+        questions = [i.format() for i in result.items]
         result = {
             'questions': questions,
             'totalQuestions': result.total,
@@ -80,12 +88,21 @@ def create_app(test_config=None):
         }
         return jsonify(result)
     '''
-  @TODO: 
   Create an endpoint to DELETE question using a question ID. 
 
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+    @app.route('/questions/<int:question_id>', methods=['DELETE'])
+    def delete_question(question_id):
+        try:
+            Question.query.filter_by(id=question_id).delete()
+            db.session.commit()
+        except:
+            db.session.rollback()
+        finally:
+            db.session.close()
+        return jsonify({'success': True})
 
     '''
   @TODO: 
@@ -97,6 +114,28 @@ def create_app(test_config=None):
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+    @app.route('/questions', methods=['POST'])
+    def create_question():
+        try:
+            input = request.json
+            print(input)
+            question = Question(
+                input['question'],
+                input['answer'],
+                input['difficulty'],
+                input['category']
+            )
+
+            db.session.add(question)
+            db.session.commit()
+            flash('Question was successfully added!')
+        except:
+            db.session.rollback()
+            flash('An error occurred. Question could not be listed.', 'error')
+            print(sys.exc_info())
+        finally:
+            db.session.close()
+        return jsonify({'success': True})
 
     '''
   @TODO: 

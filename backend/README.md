@@ -109,3 +109,17 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 ```
+
+## Set PostgresSQL DB
+cd /docker
+1st create the container
+
+```
+docker-compose up -d --build
+```
+
+Once the container is created you can start/stop it
+```
+docker start trivia
+docker stop trivia
+```
