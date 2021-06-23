@@ -163,7 +163,7 @@ POST '/questions'
 ```
 
 ```js
-POST '/questions'
+POST '/questions/search'
 - Sends a post request in order to search for a specific question by search term 
 - Request Body: 
 {

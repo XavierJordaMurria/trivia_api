@@ -10,6 +10,7 @@ from flask import (
     flash
 )
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import and_
 from flask_cors import CORS
 from flask_paginate import Pagination, get_page_args
 import random
@@ -105,7 +106,6 @@ def create_app(test_config=None):
         return jsonify({'success': True})
 
     '''
-  @TODO: 
   Create an endpoint to POST a new question, 
   which will require the question and answer text, 
   category, and difficulty score.
@@ -138,7 +138,6 @@ def create_app(test_config=None):
         return jsonify({'success': True})
 
     '''
-  @TODO: 
   Create a POST endpoint to get questions based on a search term. 
   It should return any questions for whom the search term 
   is a substring of the question. 
@@ -147,16 +146,40 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
+    @app.route('/questions/search', methods=['POST'])
+    def search_questions():
+        search = "%{}%".format(request.form.get('search_term', ''))
+        result = Question.query.filter(Question.question.ilike(search)).all()
+
+        questions = [i.format() for i in result]
+
+        result = {
+            'questions': questions,
+            'totalQuestions': len(result),
+            'currentCategory': 'art'
+        }
+        return jsonify(result)
 
     '''
-  @TODO: 
   Create a GET endpoint to get questions based on category. 
 
   TEST: In the "List" tab / main screen, clicking on one of the 
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
+    @app.route('/categories/<string:category_id>/questions', methods=['GET'])
+    def search_questions_by_category(category_id):
 
+        result = Question.query.filter_by(category=category_id).all()
+
+        questions = [i.format() for i in result]
+
+        result = {
+            'questions': questions,
+            'totalQuestions': len(result),
+            'currentCategory': 'art'
+        }
+        return jsonify(result)
     '''
   @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
@@ -168,7 +191,25 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+    @app.route('/quizzes', methods=['POST'])
+    def get_quizz():
+        input = request.json
+        print(input)
+        '''{'previous_questions': [], 'quiz_category': {'type': 'click', 'id': 0}}'''
 
+        if (input['quiz_category']['type'] == 'click'):
+            result = Question.query.filter(
+                and_(
+                    Question.id.notin_(input['previous_questions']),
+                    Question.category.match(input['quiz_category']['id']),
+                )).first()
+        else:
+            result = Question.query.filter_by(
+                category=input['quiz_category']['id']).first()
+
+        questions = result.format()
+
+        return jsonify(questions)
     '''
   Create error handlers for all expected errors 
   including 404 and 422. 
