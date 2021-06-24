@@ -14,24 +14,24 @@ from sqlalchemy import and_
 from flask_cors import CORS
 from flask_paginate import Pagination, get_page_args
 import random
-from .models import (
+from models import (
     setup_db,
     Question,
     Category,
     db
 )
 from typing import List
+from .config import DevelopmentConfig
 from functools import reduce
 
 QUESTIONS_PER_PAGE = 10
-
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
     setup_db(app)
-    app.config.from_envvar('FLASK_CONFIG')
-
+    # app.config.from_envvar('FLASK_CONFIG')
+    app.config.from_object(DevelopmentConfig())
     # CORS(app)
     cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
