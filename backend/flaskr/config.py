@@ -6,5 +6,3 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 # Enable debug mode.
 DEBUG = True
 
-# Connect to the database
-SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:tgkicksass@localhost:15432/trivia'
