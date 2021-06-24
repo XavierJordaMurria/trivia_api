@@ -197,19 +197,22 @@ def create_app(test_config=None):
         print(input)
         '''{'previous_questions': [], 'quiz_category': {'type': 'click', 'id': 0}}'''
 
-        if (input['quiz_category']['type'] == 'click'):
-            result = Question.query.filter(
-                and_(
-                    Question.id.notin_(input['previous_questions']),
-                    Question.category.match(input['quiz_category']['id']),
-                )).first()
-        else:
-            result = Question.query.filter_by(
-                category=input['quiz_category']['id']).first()
+        prev_q = input['previous_questions']
+        print(prev_q)
+        q_category = input['quiz_category']
+        print(q_category)
+        
+        query = db.session.query(Question)
 
-        questions = result.format()
+        query = query.filter(Question.id.notin_(input['previous_questions']))
 
-        return jsonify(questions)
+        if (input['quiz_category']['type'] != 'click'):
+            query = query.filter_by(category=input['quiz_category']['id'])
+
+        result = query.first()
+        question = result.format()
+
+        return jsonify(result = question)
     '''
   Create error handlers for all expected errors 
   including 404 and 422. 
