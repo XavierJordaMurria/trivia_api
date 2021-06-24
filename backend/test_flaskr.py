@@ -16,7 +16,7 @@ class TriviaTestCase(unittest.TestCase):
         self.client = self.app.test_client
 
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}:{}@{}/{}".format('postgres', 'tgkicksass','localhost:15432', self.database_name)
+        self.database_path = "postgresql://{}:{}@{}/{}".format('postgres', 'tgkicksass','localhost:15432', self.database_name)
         
         setup_db(self.app, self.database_path)
 
@@ -35,6 +35,18 @@ class TriviaTestCase(unittest.TestCase):
     TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
+    def test_get_categories(self):
+        res = self.client().get('/categories')
+        self.assertEqual(res.status_code, 200)
+
+    def test_get_questions(self):
+        res = self.client().get('/questions')
+        self.assertEqual(res.status_code, 200)
+
+    def test_get_category_question(self):
+        res = self.client().get('/categories/1/questions')
+        self.assertEqual(res.status_code, 200)
+
     def test_get_entry(self):
         res = self.client().get('/')
         self.assertEqual(res.status_code, 200)
