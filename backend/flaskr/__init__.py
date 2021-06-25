@@ -97,6 +97,11 @@ def create_app(test_config=None):
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
     def delete_question(question_id):
         try:
+            question = Question.query.filter(Question.id == question_id).one_or_none()
+
+            if question is None:
+                abort(404)
+
             Question.query.filter_by(id=question_id).delete()
             db.session.commit()
         except:
@@ -181,7 +186,6 @@ def create_app(test_config=None):
         }
         return jsonify(result)
     '''
-  @TODO: 
   Create a POST endpoint to get questions to play the quiz. 
   This endpoint should take category and previous question parameters 
   and return a random questions within the given category, 
@@ -213,28 +217,33 @@ def create_app(test_config=None):
         question = result.format()
 
         return jsonify(result = question)
+    
     '''
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
-    @app.errorhandler(401)
-    def unauthorized__error(error):
-        return render_template('errors/401.html'), 401
-
-    @app.errorhandler(403)
-    def no_permission_error(error):
-        return render_template('errors/403.html'), 403
-
     @app.errorhandler(404)
-    def not_found_error(error):
-        return render_template('errors/404.html'), 404
+    def not_found(error):
+        return jsonify({
+        "success": False, 
+        "error": 404,
+        "message": "resource not found"
+        }), 404
 
     @app.errorhandler(422)
-    def unprocessable_entity(error):
-        return render_template('errors/422.html'), 422
+    def unprocessable(error):
+        return jsonify({
+        "success": False, 
+        "error": 422,
+        "message": "unprocessable"
+        }), 422
 
-    @app.errorhandler(500)
-    def server_error(error):
-        return render_template('errors/500.html'), 500
+    @app.errorhandler(400)
+    def bad_request(error):
+        return jsonify({
+        "success": False, 
+        "error": 400,
+        "message": "bad request"
+        }), 400
 
     return app
