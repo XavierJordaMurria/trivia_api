@@ -1,4 +1,5 @@
-# Backend - Full Stack Trivia API 
+# Backend - Full Stack Trivia API  #
+
 
 ### Installing Dependencies for the Backend
 
@@ -78,26 +79,136 @@ One note before you delve into your tasks: for each endpoint, you are expected t
 
 
 ## Review Comment to the Students
-```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
 
-Endpoints
-GET '/api/v1.0/categories'
-GET ...
-POST ...
-DELETE ...
+## API description
 
-GET '/api/v1.0/categories'
+### /categories
+```js
+GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Returns: An object with a single key, categories, that contains an object of id: category_string key:value pairs. 
+{
+    'categories': { '1' : "Science",
+    '2' : "Art",
+    '3' : "Geography",
+    '4' : "History",
+    '5' : "Entertainment",
+    '6' : "Sports" }
+}
+```
 
+### /questions?page=${integer}
+```js
+GET '/questions?page=${integer}'
+- Fetches a paginated set of questions, a total number of questions, all categories and current category string. 
+- Request Arguments: page - integer
+- Returns: An object with 10 paginated questions, total questions, object including all categories, and current category string
+{
+    'questions': [
+        {
+            'id': 1,
+            'question': 'This is a question',
+            'answer': 'This is an answer', 
+            'difficulty': 5,
+            'category': 2
+        },
+    ],
+    'totalQuestions': 100,
+    'categories': { '1' : "Science",
+    '2' : "Art",
+    '3' : "Geography",
+    '4' : "History",
+    '5' : "Entertainment",
+    '6' : "Sports" },
+    'currentCategory': 'History'
+}
+```
+
+### /categories/${id}/questions
+```js
+GET '/categories/${id}/questions'
+- Fetches questions for a cateogry specified by id request argument 
+- Request Arguments: id - integer
+- Returns: An object with questions for the specified category, total questions, and current category string 
+{
+    'questions': [
+        {
+            'id': 1,
+            'question': 'This is a question',
+            'answer': 'This is an answer', 
+            'difficulty': 5,
+            'category': 4
+        },
+    ],
+    'totalQuestions': 100,
+    'currentCategory': 'History'
+}
+```
+
+### /questions/${id}
+```js
+DELETE '/questions/${id}'
+- Deletes a specified question using the id of the question
+- Request Arguments: id - integer
+- Returns: Does not need to return anything besides the appropriate HTTP status code. Optionally can return the id of the question. If you are able to modify the frontend, you can have it remove the question using the id instead of refetching the questions. 
+```
+
+### /quizzes
+```js
+POST '/quizzes'
+- Sends a post request in order to get the next question 
+- Request Body: 
+{'previous_questions':  an array of question id's such as [1, 4, 20, 15]
+'quiz_category': a string of the current category }
+- Returns: a single new question object 
+{
+    'question': {
+        'id': 1,
+        'question': 'This is a question',
+        'answer': 'This is an answer', 
+        'difficulty': 5,
+        'category': 4
+    }
+}
+```
+
+### /questions
+```js
+POST '/questions'
+- Sends a post request in order to add a new question
+- Request Body: 
+{
+    'question':  'Heres a new question string',
+    'answer':  'Heres a new answer string',
+    'difficulty': 1,
+    'category': 3,
+}
+- Returns: Does not return any new data
+```
+
+### /questions/search
+```js
+POST '/questions/search'
+- Sends a post request in order to search for a specific question by search term 
+- Request Body: 
+{
+    'searchTerm': 'this is the term the user is looking for'
+}
+- Returns: any array of questions, a number of totalQuestions that met the search term and the current category string 
+{
+    'questions': [
+        {
+            'id': 1,
+            'question': 'This is a question',
+            'answer': 'This is an answer', 
+            'difficulty': 5,
+            'category': 5
+        },
+    ],
+    'totalQuestions': 100,
+    'currentCategory': 'Entertainment'
+}
 ```
 
 

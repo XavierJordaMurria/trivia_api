@@ -153,7 +153,7 @@ def create_app(test_config=None):
   '''
     @app.route('/questions/search', methods=['POST'])
     def search_questions():
-        search = "%{}%".format(request.form.get('search_term', ''))
+        search = "%{}%".format(request.json['searchTerm'], '')
         result = Question.query.filter(Question.question.ilike(search)).all()
 
         questions = [i.format() for i in result]
@@ -216,7 +216,7 @@ def create_app(test_config=None):
         result = query.first()
         question = result.format()
 
-        return jsonify(result = question)
+        return jsonify(question = question)
     
     '''
   Create error handlers for all expected errors 
